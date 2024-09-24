@@ -1,6 +1,8 @@
 // importing classes from other files
 import inquirer from "inquirer";
+import Truck from "./Truck.js";
 import Car from "./Car.js";
+import Motorbike from "./Motorbike.js";
 // define the Cli class
 class Cli {
     // TODO: Update the constructor to accept Truck and Motorbike objects as well
@@ -46,13 +48,19 @@ class Cli {
                 name: 'vehicleType',
                 message: 'Select a vehicle type',
                 // TODO: Update the choices array to include Truck and Motorbike
-                choices: ['Car'],
+                choices: ['Car', 'Truck', 'Motorbike'],
             },
         ])
             .then((answers) => {
             if (answers.vehicleType === 'Car') {
                 // create a car
                 this.createCar();
+            }
+            else if (answers.vehicleType === 'Truck') {
+                this.createTruck();
+            }
+            else if (answers.vehicleType === 'Motorbike') {
+                this.createMotorbike();
             }
             // TODO: add statements to create a truck or motorbike if the user selects the respective vehicle type
         });
@@ -145,10 +153,15 @@ class Cli {
             },
         ])
             .then((answers) => {
-            // TODO: Use the answers object to pass the required properties to the Truck constructor
-            // TODO: push the truck to the vehicles array
-            // TODO: set the selectedVehicleVin to the vin of the truck
-            // TODO: perform actions on the truck
+            const truck = new Truck(
+            // TODO: The generateVin method is static and should be called using the class name Cli, make sure to use Cli.generateVin() for creating a truck and motorbike as well!
+            Cli.generateVin(), answers.color, answers.make, answers.model, parseInt(answers.year), parseInt(answers.weight), parseInt(answers.topSpeed), [], parseInt(answers.towingCapacity));
+            // push the car to the vehicles array
+            this.vehicles.push(truck);
+            // set the selectedVehicleVin to the vin of the car
+            this.selectedVehicleVin = truck.vin;
+            // perform actions on the car
+            this.performActions();
         });
     }
     // method to create a motorbike
@@ -207,15 +220,20 @@ class Cli {
             },
         ])
             .then((answers) => {
-            // TODO: Use the answers object to pass the required properties to the Motorbike constructor
-            // TODO: push the motorbike to the vehicles array
-            // TODO: set the selectedVehicleVin to the vin of the motorbike
-            // TODO: perform actions on the motorbike
+            const motorbike = new Motorbike(
+            // TODO: The generateVin method is static and should be called using the class name Cli, make sure to use Cli.generateVin() for creating a truck and motorbike as well!
+            Cli.generateVin(), answers.color, answers.make, answers.model, parseInt(answers.year), parseInt(answers.weight), parseInt(answers.topSpeed), []);
+            // push the car to the vehicles array
+            this.vehicles.push(motorbike);
+            // set the selectedVehicleVin to the vin of the car
+            this.selectedVehicleVin = motorbike.vin;
+            // perform actions on the car
+            this.performActions();
         });
     }
     // method to find a vehicle to tow
     // TODO: add a parameter to accept a truck object
-    findVehicleToTow() {
+    findVehicleToTow(truck) {
         inquirer
             .prompt([
             {
@@ -232,6 +250,14 @@ class Cli {
         ])
             .then((answers) => {
             // TODO: check if the selected vehicle is the truck
+            if (truck.vin === answers.vehicle.vin) {
+                console.log(`The truck cannot tow itself!`);
+                this.performActions();
+            }
+            else {
+                truck.tow;
+                this.performActions();
+            }
             // TODO: if it is, log that the truck cannot tow itself then perform actions on the truck to allow the user to select another action
             // TODO: if it is not, tow the selected vehicle then perform actions on the truck to allow the user to select another action
         });
@@ -246,6 +272,8 @@ class Cli {
                 message: 'Select an action',
                 // TODO: add options to tow and wheelie
                 choices: [
+                    'tow',
+                    'wheelie',
                     'Print details',
                     'Start vehicle',
                     'Accelerate 5 MPH',
@@ -326,7 +354,26 @@ class Cli {
                 }
             }
             // TODO: add statements to perform the tow action only if the selected vehicle is a truck. Call the findVehicleToTow method to find a vehicle to tow and pass the selected truck as an argument. After calling the findVehicleToTow method, you will need to return to avoid instantly calling the performActions method again since findVehicleToTow is asynchronous.
+            // else if (answers.action === 'tow') {
+            //   for (let i = 0; i < this.vehicles.length; i++) {
+            //     if (this.vehicles[i].vin === this.selectedVehicleVin) {
+            //       this.vehicles[i].findVehicleToTow();
+            //     }
+            //   }
+            // }
             // TODO: add statements to perform the wheelie action only if the selected vehicle is a motorbike
+            else if (answers.action === 'wheelie') {
+                // Find the selected vehicle
+                const selectedVehicle = this.vehicles.find(vehicle => vehicle.vin === this.selectedVehicleVin);
+                // Check if the selected vehicle is a Motorbike
+                if (selectedVehicle instanceof Motorbike) {
+                    const message = selectedVehicle.wheelie(); // Call the method
+                    console.log(message); // Log the message
+                }
+                else {
+                    console.log('This vehicle cannot perform a wheelie.');
+                }
+            }
             else if (answers.action === 'Select or create another vehicle') {
                 // start the cli to return to the initial prompt if the user wants to select or create another vehicle
                 this.startCli();
