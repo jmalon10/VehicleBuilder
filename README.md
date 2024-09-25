@@ -19,7 +19,11 @@ Introducing a new way of 'playing cars"! We invite you to use your imagination t
 - run ' npm start ' in the terminal and answer the prompts that follow
 - Watch the video below to see a demonstration!
 
-https://github.com/user-attachments/assets/281a9e1e-26bf-4f7a-91c8-457071d1a3db
+
+
+https://github.com/user-attachments/assets/faaadf4a-e647-44e2-96e8-035d4ef12a25
+
+
 
 
 ## Credits 
